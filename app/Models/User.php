@@ -13,15 +13,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $guarded = [];
 
-     protected $guarded = [];
-
-     protected $fillable = [
+    // Los campos que se pueden llenar con create() o update()
+    protected $fillable = [
         'name',
         'email',
         'password',
@@ -32,40 +27,33 @@ class User extends Authenticatable
         'categoria_usuario_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function categoriaUsuario():BelongsTo{
+
+    // Relación de pertenencia a categoría de usuario (cada usuario pertenece a una categoría de usuario)
+    public function categoriaUsuario(): BelongsTo {
         return $this->belongsTo(CategoriaUsuario::class);
     }
 
-    public function facturas():HasMany{
+    // Relación uno a muchos con facturas (un usuario puede tener varias facturas)
+    public function facturas(): HasMany {
         return $this->hasMany(Factura::class);
     }
 
-    public function mariscos():HasMany{
-        return $this->hasMany(marisco::class);
+    // Relación uno a muchos con mariscos (un usuario puede tener varios mariscos)
+    public function mariscos(): HasMany {
+        return $this->hasMany(Marisco::class);
     }
 
-    public function pescados():HasMany{
-        return $this->hasMany(pescado::class);
+    // Relación uno a muchos con pescados (un usuario puede tener varios pescados)
+    public function pescados(): HasMany {
+        return $this->hasMany(Pescado::class);
     }
-
-
 }

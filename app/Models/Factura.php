@@ -13,6 +13,7 @@ class Factura extends Model
 
     protected $guarded = [];
 
+    // Se especifican los campos que se pueden llenar con create() o update()
     protected $fillable = [
         'precioFinal',
         'metodoPago',
@@ -20,12 +21,14 @@ class Factura extends Model
         'user_id'
     ];
 
+    // Relación de pertenencia a usuario (cada factura pertenece a un usuario)
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function lineas():HasMany{
+    // Relación uno a muchos con las líneas de factura (cada factura puede tener varias líneas)
+    public function lineas(): HasMany {
         return $this->hasMany(Linea::class);
     }
 }

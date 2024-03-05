@@ -20,6 +20,7 @@
                     <th>Fecha de Compra</th>
                     <th>Categoría</th>
                     <th>Cocido</th>
+                    <th>Accion</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,4 +48,6 @@
         <button type="submit" class="btn btn-primary">Actualizar Todos</button>
         <br><br>
     </form>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 @endsection

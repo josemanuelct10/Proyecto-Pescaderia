@@ -1,5 +1,5 @@
 <div class="container">
-    <h2 class="display-4 mb-4">@yield('titulo')</h2>
+    <h1 class="mb-4">Lista de Pescados</h1>
     <table class="table">
         <thead>
             <tr>

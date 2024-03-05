@@ -13,77 +13,88 @@ use App\Http\Requests\CarritoRequest;
 
 class CarritoController extends Controller
 {
+
+    // Método para gestionar la adición de productos al carrito
     public function gestionCarrito(Request $request)
-{
-    $producto_id = $request->input('producto_id');
-    $tipo = $request->input('tipo');
-    $cantidad = $request->input('cantidad');
+    {
+        // Obtener datos del formulario
+        $producto_id = $request->input('producto_id');
+        $tipo = $request->input('tipo');
+        $cantidad = $request->input('cantidad');
 
-    // Obtener el carrito actual de la sesión o crear uno vacío
-    $carrito = session()->get('carrito', []);
+        // Obtener el carrito actual de la sesión o crear uno vacío
+        $carrito = session()->get('carrito', []);
 
-    // Agregar el producto al carrito con su identificador único
-    if ($tipo === 'pescado') {
-        $producto = Pescado::findOrFail($producto_id);
-        $precio_total = $producto->precioKG * $cantidad;
-        $carrito[] = [
-            'tipo' => $tipo,
-            'imagen' => $producto->imagen,
-            'pescado_id' => $producto_id,
-            'nombre' => $producto->nombre,
-            'cantidad' => $cantidad,
-            'precioKg' => $producto->precioKG,
-            'precio_total' => $precio_total,
-            'preparacion' => $request->input('preparacion')
-        ];
-    } elseif ($tipo === 'marisco') {
-        $producto = Marisco::findOrFail($producto_id);
-        $cocido = $producto->cocido;
-        $precio_total = $producto->precioKG * $cantidad;
-        $carrito[] = [
-            'tipo' => $tipo,
-            'marisco_id' => $producto_id,
-            'nombre' => $producto->nombre,
-            'cantidad' => $cantidad,
-            'precioKg' => $producto->precioKG,
-            'precio_total' => $precio_total,
-            'preparacion' => $cocido
-        ];
-    } else {
-        // Aquí puedes manejar algún tipo de error o situación inesperada
+        // Agregar el producto al carrito con su identificador único
+        if ($tipo === 'pescado') {
+            $producto = Pescado::findOrFail($producto_id);
+            $precio_total = $producto->precioKG * $cantidad;
+            $carrito[] = [
+                'tipo' => $tipo,
+                'imagen' => $producto->imagen,
+                'pescado_id' => $producto_id,
+                'nombre' => $producto->nombre,
+                'cantidad' => $cantidad,
+                'precioKg' => $producto->precioKG,
+                'precio_total' => $precio_total,
+                'preparacion' => $request->input('preparacion')
+            ];
+        } elseif ($tipo === 'marisco') {
+            $producto = Marisco::findOrFail($producto_id);
+            $cocido = $producto->cocido;
+            $precio_total = $producto->precioKG * $cantidad;
+            $carrito[] = [
+                'tipo' => $tipo,
+                'imagen' => $producto->imagen,
+                'marisco_id' => $producto_id,
+                'nombre' => $producto->nombre,
+                'cantidad' => $cantidad,
+                'precioKg' => $producto->precioKG,
+                'precio_total' => $precio_total,
+                'preparacion' => $cocido
+            ];
+        }
+
+        // Guardar el carrito actualizado en la sesión
+        session()->put('carrito', $carrito);
+
+        // Redirigir a la página de visualización del carrito
+        return redirect()->route('carrito.mostrar');
     }
 
-    // Guardar el carrito actualizado en la sesión
-    session()->put('carrito', $carrito);
-
-    return redirect()->route('carrito.mostrar');
-}
-
-
+    // Método para mostrar el contenido del carrito
     public function mostrarCarrito()
     {
         // Obtener el carrito de la sesión
         $carrito = session()->get('carrito', []);
 
+        // Mostrar la vista 'Clientes.Carrito' con el contenido del carrito
         return view('Clientes.Carrito', ['carrito' => $carrito]);
     }
 
+    // Método para mostrar las facturas asociadas al usuario actual
     public function mostrarFacturas()
     {
+        // Obtener el ID del usuario autenticado
         $userId = Auth::id();
 
+        // Obtener todas las facturas asociadas al usuario
         $facturas = Factura::where('user_id', $userId)->get();
 
+        // Mostrar la vista 'Clientes.facturas' con las facturas obtenidas
         return view('Clientes.facturas', ['facturas' => $facturas]);
     }
 
-    public function detalleFactura($id){
+    // Método para mostrar los detalles de una factura específica
+    public function detalleFactura($id)
+    {
+        // Obtener la factura y sus líneas asociadas
         $factura = Factura::findOrFail($id);
         $lineas = Linea::where('factura_id', $id)->get();
 
+        // Mostrar la vista 'Clientes.detalleFactura' con los detalles obtenidos
         return view('Clientes.detalleFactura', ['factura' => $factura], ['lineas' => $lineas]);
     }
-
 
     public function finalizarCompra(CarritoRequest $request)
     {
@@ -91,16 +102,12 @@ class CarritoController extends Controller
         $carrito = session()->get('carrito');
 
         // Calcular el precio final sumando los precios totales de cada producto en el carrito
-
         $precioFinal = 0;
-
         if (!empty($carrito)) {
             foreach ($carrito as $item) {
                 $precioFinal += $item['precio_total'];
             }
         }
-
-
 
         // Obtener el usuario actual que está finalizando la compra
         $user = Auth::user();
@@ -113,38 +120,36 @@ class CarritoController extends Controller
             'user_id' => $user->id,
         ]);
 
+        // Comprobar si el carrito no está vacío
+        if (!empty($carrito)) {
+            foreach ($carrito as $item) {
+                // Restar la cantidad vendida del inventario del producto
+                if ($item['tipo'] === 'pescado') {
+                    $producto = Pescado::find($item['pescado_id']);
+                    Linea::create([
+                        'factura_id' => $factura->id,
+                        'pescado_id' => $producto->id,
+                        'cantidad' => $item['cantidad'],
+                        'preparacion' => $item['preparacion'],
+                        'precioFila' => $item['precio_total'],
+                    ]);
+                } elseif ($item['tipo'] === 'marisco') {
+                    $producto = Marisco::find($item['marisco_id']);
+                    Linea::create([
+                        'factura_id' => $factura->id,
+                        'marisco_id' => $producto->id,
+                        'cantidad' => $item['cantidad'],
+                        'preparacion' => $item['preparacion'],
+                        'precioFila' => $item['precio_total'],
+                    ]);
+                }
 
-// Comprobar si el carrito no está vacío
-if (!empty($carrito)) {
-    foreach ($carrito as $item) {
-        // Restar la cantidad vendida del inventario del producto
-        if ($item['tipo'] === 'pescado') {
-            $producto = Pescado::find($item['pescado_id']);
-                Linea::create([
-                'factura_id' => $factura->id,
-                'pescado_id' => $producto->id,
-                'cantidad' => $item['cantidad'],
-                'preparacion' => $item['preparacion'],
-                'precioFila' => $item['precio_total'],
-            ]);
-
-        } elseif ($item['tipo'] === 'marisco') {
-            $producto = Marisco::find($item['marisco_id']);
-            Linea::create([
-                'factura_id' => $factura->id,
-                'marisco_id' => $producto->id,
-                'cantidad' => $item['cantidad'],
-                'preparacion' => $item['preparacion'],
-                'precioFila' => $item['precio_total'],
-            ]);
+                if ($producto) {
+                    $producto->cantidad -= $item['cantidad'];
+                    $producto->save();
+                }
+            }
         }
-
-        if ($producto) {
-            $producto->cantidad -= $item['cantidad'];
-            $producto->save();
-        }
-    }
-}
         // Limpiar el carrito de la sesión
         session()->forget('carrito');
 
@@ -153,8 +158,8 @@ if (!empty($carrito)) {
     }
 
 
-    public function eliminarProductoCarrito(Request $request){
-
+    public function eliminarProductoCarrito(Request $request)
+    {
         $producto_id = $request->input('producto_id');
 
         // Obtener el carrito actual de la sesión
@@ -171,14 +176,11 @@ if (!empty($carrito)) {
     }
 
     public function mostrarConfirmacion($facturaId)
-{
-    // Obtener la factura correspondiente al ID proporcionado
-    $factura = Factura::findOrFail($facturaId);
+    {
+        // Obtener la factura correspondiente al ID proporcionado
+        $factura = Factura::findOrFail($facturaId);
 
-    // Retornar la vista de confirmación con los detalles de la factura
-    return view('Clientes.Confirmacion', compact('factura'));
-}
-
-
-
+        // Retornar la vista de confirmación con los detalles de la factura
+        return view('Clientes.Confirmacion', compact('factura'));
+    }
 }

@@ -35,6 +35,7 @@
                 @endforeach
             </tbody>
         </table>
+        <br>
 
         <button class="btn btn-danger" id="btnEliminarPescado">Eliminar</button>
     </form>
@@ -47,4 +48,6 @@
             }
         });
     </script>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 @endsection

@@ -10,10 +10,10 @@ use App\Http\Controllers\ProveedorController;
 
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\CategoriasUsuarioController;
 
-
-
-
+use App\Http\Controllers\UsuariosController;
+use App\Models\CategoriaUsuario;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,9 +33,7 @@ Route::get('/registro', [InicioSesionController::class, 'registro'])->name('regi
 Route::post('/gestionRegistro', [InicioSesionController::class, 'gestionRegistro'])->name('gestionRegistro');
 Route::post('/gestionInicioSesion', [InicioSesionController::class, 'gestionInicio'])->name('gestionInicioSesion');
 Route::post('logout', [InicioSesionController::class, 'logout'])->name('logout');
-Route::get('/updatePassword', [InicioSesionController::class, 'updatePassword'])->name('update.password');
-Route::post('/verificarDatos', [InicioSesionController::class, 'verificarDatos'])->name('verificar.datos');
-Route::post('/actualizarPassword', [InicioSesionController::class, 'actualizarPassword'])->name('actualizar.password');
+
 
 // Clientes
 Route::view('/inicio', 'Clientes.inicio')->name('clientes.inicio');
@@ -64,9 +62,9 @@ Route::put('/perfil', [InicioSesionController::class, 'updatePerfil'])->name('up
 Route::post('/buscador', [BuscadorController::class, 'buscar'])->name('buscador');
 
 
+// Inicio de los Administradores
 Route::view('/inicioAdmin', 'index')->name('inicioAdmin');
 
-Route::view('/usuarios', 'Usuarios.usuarios')->name('usuarios');
 
 // Facturas Clientes
 Route::get('/facturas', [CarritoController::class, 'mostrarFacturas'])->name('facturas');
@@ -106,13 +104,17 @@ Route::put('/proveedor/delete', [ProveedorController::class, 'delete'])->name('d
 Route::get('/proveedor/edit', [ProveedorController::class, 'edit'])->name('editProveedor');
 Route::put('/proveedor/update', [ProveedorController::class, 'update'])->name('updateProveedor');
 
+// Usuario
+Route::get('/usuarios/show', [UsuariosController::class, 'show'])->name('usuarios.show');
+Route::get('/usuarios/edit', [UsuariosController::class, 'edit'])->name('usuarios.edit');
+Route::put('/usuarios/update', [UsuariosController::class, 'update'])->name('usuarios.update');
 
-// Buscador
-// Route::get('/buscar', [BuscadorController::class, 'buscar'])->name('buscar');
-
-
-
-
+// Categorias Usuarios
+Route::get('/categorias/show', [CategoriasUsuarioController::class, 'show'])->name('categorias.show');
+Route::get('/categorias', [CategoriasUsuarioController::class, 'add'])->name('categorias.add');
+Route::post('/categorias/add', [CategoriasUsuarioController::class, 'gestionAdd'])->name('categorias.gestionAdd');
+Route::get('/categorias/rm', [CategoriasUsuarioController::class, 'rm'])->name('categorias.rm');
+Route::put('/categorias/delete', [CategoriasUsuarioController::class, 'delete'])->name('categorias.delete');
 
 
 // Productos

@@ -5,52 +5,59 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UsuarioRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
-
-
 use Illuminate\Http\Request;
 use App\Models\User;
 
-
 class InicioSesionController extends Controller
 {
-    public function inicio(){
+    // Método para mostrar la vista de inicio de sesión
+    public function inicio()
+    {
         return view('InicioSesion.inicioSesion');
-
     }
 
-    public function registro(){
+    // Método para mostrar la vista de registro
+    public function registro()
+    {
         return view('InicioSesion.registro');
-
     }
 
-    public function gestionRegistro(UsuarioRequest $request){
+    // Método para gestionar el registro de un nuevo usuario
+    public function gestionRegistro(UsuarioRequest $request)
+    {
+        // Crear un nuevo usuario con los datos del formulario
         User::create($request->all());
+
+        // Redirigir a la ruta de inicio
         return redirect()->route('inicio');
     }
+
+    // Método para gestionar el inicio de sesión
     public function gestionInicio(Request $request)
     {
-        // Obtener el usuario con el email
+        // Obtener el usuario con el email proporcionado
         $user = User::where('email', $request->email)->first();
 
+        // Verificar si el usuario existe y si la contraseña coincide
         if ($user && Hash::check($request->password, $user->password)) {
-            if ($user->categoria_usuario_id == 0) {
-                // Si es admin, redirige a la ruta correspondiente para admin
+            // Verificar el rol del usuario
+            if ($user->categoriaUsuario->descripcion === "Administrador") {
+                // Si es administrador, redirigir a la ruta correspondiente para administradores
                 Auth::login($user);
-                return redirect()->route('inicioAdmin'); // Cambia esto a la ruta correcta
+                return redirect()->route('inicioAdmin');
             } else {
-                // Si no es admin, redirige al inicio de sesión normal
+                // Si no es administrador, redirigir al inicio de sesión normal para clientes
                 Auth::login($user);
                 return redirect()->route('clientes.inicio');
             }
         }
 
         // Si no se encuentra el usuario o la contraseña no coincide,
-        // redirigir de vuelta al formulario de inicio de sesión con un mensaje de error
+        // redirigir al formulario de inicio de sesión con un mensaje de error
         return redirect()->back()->withErrors(['error' => 'Credenciales incorrectas.'])->withInput($request->only('email'));
     }
 
-
+    // Método para cerrar sesión
     public function logout(Request $request)
     {
         Auth::logout();
@@ -62,93 +69,58 @@ class InicioSesionController extends Controller
         return redirect()->route('inicio');
     }
 
+    // Método para mostrar el perfil del usuario
     public function perfil()
     {
+        // Verificar si hay un usuario autenticado
         if (Auth::check()) {
             $user = Auth::user();
 
-            if ($user->categoria_usuario_id == 1) {
-                // Si la categoría es 1, redirigir a la ruta correspondiente
-                return view('InicioSesion.perfilUsuario', ['user'=>$user]);
+            // Verificar el rol del usuario
+            if ($user->categoriaUsuario->descripcion === "Administrador") {
+                // Si el usuario es administrador, mostrar el perfil de administrador
+                return view('InicioSesion.perfilAdmin', ['user' => $user]);
             } else {
-                // Si la categoría es 0, redirigir a la ruta correspondiente
-                return view('InicioSesion.perfilAdmin', ['user'=>$user]);
+                // Si el usuario no es administrador, mostrar el perfil de usuario
+                return view('InicioSesion.perfilUsuario', ['user' => $user]);
             }
         } else {
-            // Si no hay usuario autenticado, redirigir a la página de inicio de sesión
+            // Si no hay usuario autenticado, redirigir al inicio de sesión
             return redirect()->route('login');
         }
     }
 
-
-    public function updatePerfil(UsuarioRequest $request){
-                // Validar los datos del formulario
-                $request->validate([
-                    'name' => 'required|string|max:255',
-                    'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
-                    'dni' => 'required|string|max:255',
-                    'fechaNacimiento' => 'required|date',
-                    'telefono' => 'required|string|max:255',
-                    'direccion' => 'required|string|max:255',
-                ]);
-
-                // Obtener el usuario autenticado
-                $user = Auth::user();
-
-                $user->update([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'dni' => $request->dni,
-                    'fecha_nacimiento' => $request->fechaNacimiento,
-                    'telefono' => $request->telefono,
-                    'direccion' => $request->direccion,
-                ]);
-
-                if ($user->categoria_usuario_id == 0){
-                    return redirect()->route('inicioAdmin');
-                }
-                else {
-                    return redirect()->route('inicio');
-                }
-    }
-
-    public function updatePassword(){
-        return view('InicioSesion.updatePassword');
-    }
-
-    public function verificarDatos(Request $request){
-        $user = User::where('email', $request->email)
-        ->where('dni', $request->dni)
-        ->first();
-
-        if ($user) {
-            return view('InicioSesion.cambiarContraseña')->with('user', $user);
-        } else {
-            return redirect()->back()->withErrors(['error' => 'Credenciales incorrectas.'])->withInput($request->only('email', 'dni'));
-        }
-    }
-
-    public function actualizarPassword(Request $request){
+    // Método para actualizar el perfil del usuario
+    public function updatePerfil(UsuarioRequest $request)
+    {
         // Validar los datos del formulario
         $request->validate([
-            'password' => 'required|string|min:8|confirmed',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'dni' => 'required|string|max:255',
+            'fechaNacimiento' => 'required|date',
+            'telefono' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
         ]);
 
         // Obtener el usuario autenticado
-        $user = auth()->user();
+        $user = Auth::user();
 
+        // Actualizar los datos del usuario con los datos del formulario
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'dni' => $request->dni,
+            'fecha_nacimiento' => $request->fechaNacimiento,
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+        ]);
 
-        // Actualizar la contraseña del usuario
-        if ($user) {
-            $user->password =$request->password; // Opcionalmente puedes usar Hash::make($request->password)
-            $user->save();
-
-            // Redirigir al usuario a alguna vista de éxito
-            return redirect()->route('inicio');
+        // Redirigir a la ruta correspondiente según el rol del usuario
+        if ($user->categoriaUsuario->descripcion === "Administrador") {
+            return redirect()->route('inicioAdmin');
         } else {
-            // Manejar el caso en el que el usuario no exista (esto debería ser poco probable ya que ya se ha verificado en el método 'verificarDatos')
-            // return redirect()->route);
+            return redirect()->route('inicio');
         }
     }
-
 }

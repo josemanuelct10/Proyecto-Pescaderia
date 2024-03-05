@@ -38,7 +38,8 @@
         <table class="table">
             <tr>
                 <td colspan="7"></td>
-                <button class="btn btn-danger" id="btnEliminarMarisco">Eliminar</button>            </tr>
+                <button class="btn btn-danger" id="btnEliminarMarisco">Eliminar</button>
+            </tr>
         </table>
 
     </form>
@@ -51,4 +52,6 @@
             }
         });
     </script>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 @endsection

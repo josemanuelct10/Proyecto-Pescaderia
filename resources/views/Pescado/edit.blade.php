@@ -46,4 +46,6 @@
         <button type="submit" class="btn btn-primary">Actualizar Todos</button>
         <br><br>
     </form>
+    <br><br><br><br><br><br><br><br><br><br>
+
 @endsection

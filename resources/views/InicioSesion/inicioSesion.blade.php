@@ -39,9 +39,7 @@
                 <div class="mt-3">
                     <p>¿No tienes una cuenta? <a href="{{ route('registro') }}">Regístrate aquí</a>.</p>
                 </div>
-                <div class="mt-3">
-                    <p>¿Has olvidado tu contraseña? <a href="{{route('update.password')}}">Cambiala aquí</a>.</p>
-                </div>
+
             </div>
         </div>
     </div>

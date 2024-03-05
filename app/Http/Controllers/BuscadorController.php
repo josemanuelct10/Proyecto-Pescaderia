@@ -7,6 +7,11 @@ use App\Models\pescado;
 use Illuminate\Http\Request;
 
 class BuscadorController extends Controller{
+
+    /**
+     * Recibe el Request desde un formulario
+     * Devuelve una vista con los arrays de pescados y mariscos
+     */
     public function buscar(Request $request){
         $nombreBuscado = $request->input('buscador');
 

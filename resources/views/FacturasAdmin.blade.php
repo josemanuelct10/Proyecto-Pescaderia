@@ -3,6 +3,7 @@
 @section('title', "Facturas")
 
 @section('content')
+<br><br>
     <div class="container">
         <h1>Facturas</h1>
         @if($facturas->isEmpty())
@@ -35,6 +36,7 @@
                                     @csrf
                                     <button type="submit" class="btn btn-primary">Ver Detalles</button>
                                 </form>
+                                <br>
                                 <form action="{{ route('factura.rm', ['factura' => $factura->id]) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -47,4 +49,10 @@
             </table>
         @endif
     </div>
+
+    <br><br><br><br><br><br>    <br><br><br>
+    <br><br><br>
+
+
+
 @endsection

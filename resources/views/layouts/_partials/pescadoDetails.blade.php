@@ -19,12 +19,12 @@
 
             <div class="form-group">
                 <label for="cantidad" class="form-label">Cantidad: </label>
-                <input type="number" class="form-input" id="cantidad" name="cantidad" placeholder="Cantidad en KG" step="0.01">
+                <input type="number" class="form-input" id="cantidad" name="cantidad" placeholder="Cantidad en KG" step="0.01" required>
             </div>
 
             <div class="form-group">
                 <label for="preparacion" class="form-label">Preparación:</label>
-                <input type="text" class="form-input" id="preparacion" name="preparacion" placeholder="Preparación">
+                <input type="text" class="form-input" id="preparacion" name="preparacion" placeholder="Preparación" required>
             </div>
 
             <input type="submit" class="btn-add-to-cart" value="Agregar al carrito">

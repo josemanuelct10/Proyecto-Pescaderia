@@ -4,9 +4,14 @@
 
 
 @section('content')
-    <h1>Listado de Pescados</h1>
+<br><br>
     @include('layouts._partials.tablaPescado')
 
-    <h1>Listado de Marisco</h1>
     @include('layouts._partials.tablaMarisco')
+
+    <br><br><br>    <br><br><br>
+
+
 @endsection
+
+

@@ -12,7 +12,9 @@
 
 <div class="container">
     <div class="row">
-        @if($pescados->isEmpty())
+        @php $pescadosDisponibles = $pescados->filter(function($pescado) { return $pescado->cantidad > 0; }); @endphp
+
+        @if($pescadosDisponibles->isEmpty())
             <div class="col-md-12 empty-message">
                 <div class="card">
                     <div class="card-body">
@@ -22,7 +24,7 @@
                 </div>
             </div>
         @else
-            @foreach($pescados as $pescado)
+            @foreach($pescadosDisponibles as $pescado)
                 <div class="col-md-4 mb-4">
                     @include('layouts._partials.seccionesProductos', [
                         'image' => asset('storage/images/' . basename($pescado->imagen)),

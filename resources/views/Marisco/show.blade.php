@@ -3,6 +3,7 @@
 @section('title', 'Mariscos')
 
 @section('content')
-    <h1>Listado de Mariscos</h1>
     @include('layouts._partials.tablaMarisco')
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 @endsection

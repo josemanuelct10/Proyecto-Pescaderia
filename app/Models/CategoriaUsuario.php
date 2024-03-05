@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CategoriaUsuario extends Model
 {
     protected $guarded = [];
+
     use HasFactory;
 
-    public function users():HasMany{
+    // Relación uno a muchos con la tabla de usuarios
+    public function users(): HasMany {
         return $this->hasMany(User::class);
     }
 }

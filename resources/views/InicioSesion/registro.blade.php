@@ -68,7 +68,7 @@
                                 <p style="color: red;">{{$message}}</p>
                             @enderror
 
-                                <input type="hidden" class="form-control" name="categoria_usuario_id" id="categoria_usuario_id" value="1" >
+                                <input type="hidden" class="form-control" name="categoria_usuario_id" id="categoria_usuario_id" value="2" >
                             </div>
 
                             <input type="submit" class="btn btn-primary" value="Registrarse">

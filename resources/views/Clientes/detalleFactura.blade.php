@@ -1,4 +1,4 @@
-@extends(Auth::user()->categoria_usuario_id == 0 ? 'layouts.landing' : 'layouts.landingClientes')
+@extends(Auth::user()->categoriaUsuario->descripcion === 'Administrador' ? 'layouts.landing' : 'layouts.landingClientes')
 
 @section('title', 'Factura ' . $factura->id)
 
@@ -12,22 +12,37 @@
         <p><strong>Método de Pago:</strong> {{ $factura->metodoPago }}</p>
 
         <h2>Productos de la Factura</h2>
-        <ul>
-            @foreach ($lineas as $linea)
-                <li>
-                    @if (!is_null($linea->pescado_id))
-                        Producto: {{ $linea->pescado->nombre }}
-                    @elseif (!is_null($linea->marisco_id))
-                        Producto: {{ $linea->marisco->nombre }}
-                    @endif
-                    <br>
-                    Cantidad: {{ $linea->cantidad }}
-                    <br>
-                    Precio por unidad: {{ number_format($linea->precioFila, 2) }}€
-                </li>
-            @endforeach
-        </ul>
-
-      <br><br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio por unidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($lineas as $linea)
+                    <tr>
+                        <td>
+                            @if (!is_null($linea->pescado_id))
+                                <img src="{{ asset('storage/images/' . basename($linea->pescado->imagen))}}" alt="{{ $linea->pescado->nombre }}" style="max-width: 100px;">
+                            @elseif (!is_null($linea->marisco_id))
+                                <img src="{{ asset('storage/images/' . basename($linea->marisco->imagen))}}" alt="{{ $linea->marisco->nombre }}" style="max-width: 100px;">
+                            @endif
+                        </td>
+                        <td>
+                            @if (!is_null($linea->pescado_id))
+                                {{ $linea->pescado->nombre }}
+                            @elseif (!is_null($linea->marisco_id))
+                                {{ $linea->marisco->nombre }}
+                            @endif
+                        </td>
+                        <td>{{ $linea->cantidad }}</td>
+                        <td>{{ number_format($linea->precioFila, 2) }}€</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection
